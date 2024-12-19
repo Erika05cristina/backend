@@ -27,11 +27,23 @@ app.get('/api/books/:id', (req, res) => {
 
 // Agregar un nuevo libro
 app.post('/api/books', (req, res) => {
-  const books = JSON.parse(fs.readFileSync(booksFile));
-  const newBook = { id: books.length + 1, ...req.body };
-  books.push(newBook);
-  fs.writeFileSync(booksFile, JSON.stringify(books, null, 2));
-  res.status(201).json(newBook);
+  try {
+    const books = JSON.parse(fs.readFileSync(booksFile));
+
+    // Verificar que el cuerpo tiene title y author
+    const { title, author } = req.body;
+    if (!title || !author) {
+      return res.status(400).json({ message: "Title and author are required" });
+    }
+
+    const newBook = { id: books.length + 1, title, author };
+    books.push(newBook);
+
+    fs.writeFileSync(booksFile, JSON.stringify(books, null, 2));
+    res.status(201).json(newBook);
+  } catch (error) {
+    res.status(500).json({ message: "Error adding the book", error });
+  }
 });
 
 // Actualizar un libro por ID
