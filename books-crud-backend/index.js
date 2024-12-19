@@ -118,3 +118,12 @@ app.delete('/api/books/:id', (req, res) => {
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });
+
+// Configurar el pool de conexión
+const pool = new Pool({
+  user: 'dbuser',
+  host: '34.67.85.184',
+  database: 'dbuser',
+  password: '123',
+  port: 5432,
+})
