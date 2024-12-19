@@ -123,7 +123,7 @@ app.listen(PORT, '0.0.0.0', () => {
 const pool = new Pool({
   user: 'dbuser',
   host: '34.67.85.184',
-  database: 'dbuser',
+  database: 'booksdb',
   password: '123',
   port: 5432,
 })
