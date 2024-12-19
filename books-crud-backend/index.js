@@ -61,9 +61,11 @@ app.post('/api/books', (req, res) => {
       return res.status(400).json({ message: "Title and author are required" });
     }
 
-    const newBook = { id: books.length + 1, title, author };
-    books.push(newBook);
+    // Encuentra el ID más alto en la lista actual
+    const maxId = books.reduce((max, book) => (book.id > max ? book.id : max), 0);
+    const newBook = { id: maxId + 1, title, author }; // Genera un ID único
 
+    books.push(newBook);
     writeBooks(books);
     res.status(201).json(newBook);
   } catch (error) {
