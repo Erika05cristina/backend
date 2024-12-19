@@ -1,13 +1,17 @@
 [
-    {
-      "id": 1,
-      "title": "1984",
-      "author": "George Orwell"
-    },
-    {
-      "id": 2,
-      "title": "To Kill a Mockingbird",
-      "author": "Harper Lee"
-    }
-  ]
-  
+  {
+    "id": 1,
+    "title": "To Kill a Mockingbird",
+    "author": "Harper Lee"
+  },
+  {
+    "id": 2,
+    "title": "1954 (Updated)",
+    "author": "George Orwell"
+  },
+  {
+    "id": 3,
+    "title": "Cien años de soledad",
+    "author": "Gabriel Garcia Marquez"
+  }
+]
