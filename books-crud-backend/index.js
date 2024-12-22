@@ -7,7 +7,7 @@ const PORT = 3000;
 
 // Configurar el pool de conexión
 const pool = new Pool({
-  user: 'postgrest',
+  user: 'postgres',
   host: '35.222.13.229', // Reemplaza con la IP pública de tu instancia de PostgreSQL
   database: 'booksdb',
   password: '123', // Clave actualizada
