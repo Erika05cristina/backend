@@ -119,7 +119,7 @@ app.delete('/api/books/:id', async (req, res) => {
   }
 });
 
-// Configurar Multer para subir archivos a Filestore
+// Configurar Multer para subir archivos a Filestore con validación
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, '/mnt/filestore'); // Ruta montada de Filestore
@@ -129,12 +129,20 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage });
+const fileFilter = (req, file, cb) => {
+  const allowedExtensions = ['image/jpeg', 'image/png', 'image/jpg'];
+  if (!allowedExtensions.includes(file.mimetype)) {
+    return cb(new Error('Solo se permiten archivos de imagen (.jpg, .jpeg, .png).'), false);
+  }
+  cb(null, true);
+};
+
+const upload = multer({ storage, fileFilter });
 
 // Ruta para subir un archivo
 app.post('/api/files/upload', upload.single('file'), (req, res) => {
   if (!req.file) {
-    return res.status(400).json({ message: 'No se ha proporcionado un archivo' });
+    return res.status(400).json({ message: 'No se ha proporcionado un archivo válido' });
   }
   res.status(201).json({
     message: 'Archivo subido con éxito',
