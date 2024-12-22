@@ -1,6 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg'); // Importar Pool para conectar con PostgreSQL
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer');
 
 const app = express();
 const PORT = 3000;
@@ -114,6 +117,55 @@ app.delete('/api/books/:id', async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Error al eliminar el libro' });
   }
+});
+
+// Configurar Multer para subir archivos a Filestore
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, '/mnt/filestore'); // Ruta montada de Filestore
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`); // Nombre único para cada archivo
+  },
+});
+
+const upload = multer({ storage });
+
+// Ruta para subir un archivo
+app.post('/api/files/upload', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: 'No se ha proporcionado un archivo' });
+  }
+  res.status(201).json({
+    message: 'Archivo subido con éxito',
+    file: req.file.filename,
+  });
+});
+
+// Ruta para listar archivos en Filestore
+app.get('/api/files', (req, res) => {
+  const filestorePath = '/mnt/filestore';
+
+  fs.readdir(filestorePath, (err, files) => {
+    if (err) {
+      console.error('Error al leer el directorio:', err);
+      return res.status(500).json({ message: 'Error al listar los archivos' });
+    }
+    res.json({ files });
+  });
+});
+
+// Ruta para descargar un archivo
+app.get('/api/files/:filename', (req, res) => {
+  const { filename } = req.params;
+  const filePath = path.join('/mnt/filestore', filename);
+
+  res.download(filePath, (err) => {
+    if (err) {
+      console.error('Error al descargar el archivo:', err);
+      res.status(500).json({ message: 'Error al descargar el archivo' });
+    }
+  });
 });
 
 // Iniciar el servidor
