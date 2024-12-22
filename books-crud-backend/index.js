@@ -14,6 +14,20 @@ const pool = new Pool({
   port: 5432,
 });
 
+// Función de prueba de conexión
+async function testConnection() {
+  try {
+    const res = await pool.query('SELECT NOW()'); // Consulta simple para probar la conexión
+    console.log('Conexión exitosa:', res.rows);
+  } catch (err) {
+    console.error('Error de conexión:', err);
+    process.exit(1); // Detener el servidor si no se puede conectar
+  }
+}
+
+// Probar la conexión antes de arrancar el servidor
+testConnection();
+
 // Middleware
 app.use(cors());
 app.use(express.json());
