@@ -32,7 +32,12 @@ async function testConnection() {
 testConnection();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://34.59.123.88', // Permitir solicitudes desde tu frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true, // Si necesitas enviar cookies o autenticación
+}));
 app.use(express.json());
 app.use('/uploads', express.static('/mnt/filestore'));
 
