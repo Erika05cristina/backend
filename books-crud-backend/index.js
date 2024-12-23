@@ -159,7 +159,10 @@ app.get('/api/files', (req, res) => {
       console.error('Error al leer el directorio:', err);
       return res.status(500).json({ message: 'Error al listar los archivos' });
     }
-    res.json({ files });
+
+    // Generar URLs para cada archivo
+    const fileUrls = files.map((file) => `http://<tu-servidor>:3000/uploads/${file}`);
+    res.json({ files: fileUrls });
   });
 });
 
