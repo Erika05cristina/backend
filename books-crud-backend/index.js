@@ -11,7 +11,7 @@ const PORT = 3000;
 // Configurar el pool de conexión
 const pool = new Pool({
   user: 'postgres',
-  host: '35.222.13.229', // Reemplaza con la IP pública de tu instancia de PostgreSQL
+  host: '34.160.249.115', // Reemplaza con la IP pública de tu instancia de PostgreSQL
   database: 'booksdb',
   password: '123', // Clave actualizada
   port: 5432,
@@ -31,9 +31,11 @@ async function testConnection() {
 // Probar la conexión antes de arrancar el servidor
 testConnection();
 
+
+
 // Middleware
 app.use(cors({
-  origin: 'http://34.59.123.88', // Permitir solicitudes desde tu frontend
+  origin: 'http://34.160.249.115', // Permitir solicitudes desde tu frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // Si necesitas enviar cookies o autenticación
