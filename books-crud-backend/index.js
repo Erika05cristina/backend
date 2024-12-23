@@ -31,8 +31,6 @@ async function testConnection() {
 // Probar la conexión antes de arrancar el servidor
 testConnection();
 
-
-
 // Middleware
 app.use(cors({
   origin: 'http://34.160.249.115', // Permitir solicitudes desde tu frontend
