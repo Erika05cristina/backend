@@ -34,6 +34,7 @@ testConnection();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static('/mnt/filestore'));
 
 // Obtener todos los libros
 app.get('/api/books', async (req, res) => {
@@ -161,7 +162,7 @@ app.get('/api/files', (req, res) => {
     }
 
     // Generar URLs para cada archivo
-    const fileUrls = files.map((file) => `http://<tu-servidor>:3000/uploads/${file}`);
+    const fileUrls = files.map((file) => `http://34.67.85.184:3000/uploads/${file}`);
     res.json({ files: fileUrls });
   });
 });
