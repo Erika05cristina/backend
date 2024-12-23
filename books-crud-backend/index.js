@@ -40,7 +40,18 @@ app.use('/uploads', express.static('/mnt/filestore'));
 app.get('/api/books', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM books');
-    res.json(result.rows);
+    const books = result.rows.map((book) => {
+      const imagePath = path.join('/mnt/filestore', `${book.id}.jpg`);
+      const imageExists = fs.existsSync(imagePath);
+
+      return {
+        ...book,
+        image_url: imageExists
+          ? `http://34.67.85.184:3000/uploads/${book.id}.jpg`
+          : null, // Si no existe, deja la URL como null
+      };
+    });
+    res.json(books);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error al obtener los libros' });
@@ -52,15 +63,21 @@ app.get('/api/books/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const result = await pool.query('SELECT * FROM books WHERE id = $1', [id]);
+
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Libro no encontrado' });
     }
-    res.json(result.rows[0]);
+
+    const book = result.rows[0];
+    book.image_url = `http://34.67.85.184:3000/uploads/${id}.jpg`; // Genera la URL dinámicamente
+
+    res.json(book);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error al obtener el libro' });
   }
 });
+
 
 // Agregar un nuevo libro
 app.post('/api/books', async (req, res) => {
@@ -110,15 +127,24 @@ app.delete('/api/books/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const result = await pool.query('DELETE FROM books WHERE id = $1 RETURNING *', [id]);
+
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Libro no encontrado' });
     }
+
+    // Elimina el archivo del Filestore
+    const filePath = path.join('/mnt/filestore', `${id}.jpg`);
+    fs.unlink(filePath, (err) => {
+      if (err) console.error('Error al eliminar la imagen:', err);
+    });
+
     res.json({ message: 'Libro eliminado' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error al eliminar el libro' });
   }
 });
+
 
 // Configurar Multer para subir archivos a Filestore con validación
 const storage = multer.diskStorage({
@@ -140,16 +166,30 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage, fileFilter });
 
-// Ruta para subir un archivo
-app.post('/api/files/upload', upload.single('file'), (req, res) => {
+// Subir una imagen y asociarla con el ID del libro
+app.post('/api/files/upload/:id', upload.single('file'), (req, res) => {
+  const { id } = req.params;
+
   if (!req.file) {
     return res.status(400).json({ message: 'No se ha proporcionado un archivo válido' });
   }
-  res.status(201).json({
-    message: 'Archivo subido con éxito',
-    file: req.file.filename,
+
+  const newFilename = `${id}.jpg`; // Usa el ID del libro como nombre del archivo
+  const newPath = path.join('/mnt/filestore', newFilename);
+
+  fs.rename(req.file.path, newPath, (err) => {
+    if (err) {
+      console.error('Error al renombrar el archivo:', err);
+      return res.status(500).json({ message: 'Error al guardar la imagen' });
+    }
+
+    res.status(201).json({
+      message: 'Imagen subida con éxito',
+      file: newFilename,
+    });
   });
 });
+
 
 // Ruta para listar archivos en Filestore
 app.get('/api/files', (req, res) => {
