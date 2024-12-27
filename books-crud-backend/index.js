@@ -33,7 +33,7 @@ testConnection();
 
 // Middleware
 app.use(cors({
-  origin: 'http://34.59.123.88', // Permitir solicitudes desde tu frontend
+  origin: 'http://34.8.231.8', // Permitir solicitudes desde tu frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // Si necesitas enviar cookies o autenticación
