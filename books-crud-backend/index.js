@@ -33,7 +33,7 @@ testConnection();
 
 // Middleware
 app.use(cors({
-  origin: 'http://34.59.123.88', // Permitir solicitudes desde tu frontend
+  origin: ['http://34.59.123.88','http://34.49.140.83'], // Permitir solicitudes desde tu frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // Si necesitas enviar cookies o autenticación
@@ -52,7 +52,7 @@ app.get('/api/books', async (req, res) => {
       return {
         ...book,
         image_url: imageExists
-          ? `http://34.67.85.184:3000/uploads/${book.id}.jpg`
+          ? `http://34.49.140.83/uploads/${book.id}.jpg`
           : null, // Si no existe, deja la URL como null
       };
     });
@@ -74,7 +74,7 @@ app.get('/api/books/:id', async (req, res) => {
     }
 
     const book = result.rows[0];
-    book.image_url = `http://34.67.85.184:3000/uploads/${id}.jpg`; // Genera la URL dinámicamente
+    book.image_url = `http://34.49.140.83/uploads/${id}.jpg`; // Genera la URL dinámicamente
 
     res.json(book);
   } catch (error) {
@@ -207,7 +207,7 @@ app.get('/api/files', (req, res) => {
     }
 
     // Generar URLs para cada archivo
-    const fileUrls = files.map((file) => `http://34.67.85.184:3000/uploads/${file}`);
+    const fileUrls = files.map((file) => `http://34.49.140.83/uploads/${file}`);
     res.json({ files: fileUrls });
   });
 });
@@ -223,6 +223,10 @@ app.get('/api/files/:filename', (req, res) => {
       res.status(500).json({ message: 'Error al descargar el archivo' });
     }
   });
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).send('Healthy');
 });
 
 // Iniciar el servidor
